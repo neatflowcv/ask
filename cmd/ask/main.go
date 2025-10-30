@@ -32,6 +32,7 @@ func main() {
 		log.Fatal("usage: ask <prompt>")
 	}
 
+	now := time.Now()
 	inquirer := gemini.NewClient(os.Getenv("KEY"))
 	service := flow.NewService(inquirer)
 	ctx := context.Background()
@@ -40,6 +41,8 @@ func main() {
 	if err != nil {
 		log.Fatalf("ask: %v", err)
 	}
+
+	log.Println("elapsed", time.Since(now))
 
 	fmt.Println(answer) //nolint:forbidigo
 }
