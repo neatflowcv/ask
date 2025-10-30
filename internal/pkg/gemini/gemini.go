@@ -3,7 +3,6 @@ package gemini
 import (
 	"context"
 	"fmt"
-	"io"
 
 	"github.com/neatflowcv/ask/internal/pkg/inquirer"
 	"google.golang.org/genai"
@@ -21,7 +20,7 @@ func NewClient(apiKey string) *Client {
 	}
 }
 
-func (c *Client) Ask(ctx context.Context, prompt string, writer io.Writer) error {
+func (c *Client) Ask(ctx context.Context, prompt string, channel chan<- string) error {
 	client, err := genai.NewClient(ctx, &genai.ClientConfig{ //nolint:exhaustruct
 		APIKey:  c.apiKey,
 		Backend: genai.BackendGeminiAPI,
@@ -46,10 +45,7 @@ func (c *Client) Ask(ctx context.Context, prompt string, writer io.Writer) error
 			return fmt.Errorf("generate content: %w", err)
 		}
 
-		_, err = io.WriteString(writer, chunk.Text())
-		if err != nil {
-			return fmt.Errorf("write string: %w", err)
-		}
+		channel <- chunk.Text()
 	}
 
 	return nil

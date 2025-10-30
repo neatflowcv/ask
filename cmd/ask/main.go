@@ -13,6 +13,9 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/neatflowcv/ask/internal/app/flow"
 	"github.com/neatflowcv/ask/internal/pkg/gemini"
+	"github.com/neatflowcv/ask/internal/pkg/printer/console"
+	"github.com/neatflowcv/ask/internal/pkg/printer/file"
+	"github.com/neatflowcv/ask/internal/pkg/printer/group"
 )
 
 func version() string {
@@ -33,24 +36,31 @@ func main() {
 
 	prompt := strings.Join(flag.Args(), " ")
 	if prompt == "" {
-		log.Fatal("usage: ask <prompt>")
+		log.Panic("usage: ask <prompt>")
 	}
 
 	fmt.Println("Question:", prompt) //nolint:forbidigo
 
 	now := time.Now()
 	inquirer := gemini.NewClient(os.Getenv("KEY"))
-	service := flow.NewService(inquirer)
+
+	filePrinter, err := file.NewPrinter("answer.txt")
+	if err != nil {
+		log.Fatalf("new printer: %v", err)
+	}
+	defer filePrinter.Close()
+
+	groupPrinter := group.NewPrinter(console.NewPrinter(), filePrinter)
+
+	service := flow.NewService(inquirer, groupPrinter)
 	ctx := context.Background()
 
-	answer, err := service.Ask(ctx, prompt)
+	err = service.Ask(ctx, prompt)
 	if err != nil {
-		log.Fatalf("ask: %v", err)
+		log.Panicf("ask: %v", err)
 	}
 
 	log.Println("elapsed", time.Since(now))
-
-	fmt.Println(answer) //nolint:forbidigo
 }
 
 func loadEnv() {
