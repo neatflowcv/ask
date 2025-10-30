@@ -1,10 +1,15 @@
 package main
 
 import (
+	"context"
+	"fmt"
 	"log"
+	"os"
 	"runtime/debug"
+	"strings"
 
 	"github.com/joho/godotenv"
+	"github.com/neatflowcv/ask/internal/app/flow"
 )
 
 func version() string {
@@ -20,6 +25,21 @@ func main() {
 	loadEnv()
 
 	log.Println("version", version())
+
+	prompt := strings.Join(os.Args[1:], " ")
+	if prompt == "" {
+		log.Fatal("usage: ask <prompt>")
+	}
+
+	service := flow.NewService()
+	ctx := context.Background()
+
+	answer, err := service.Ask(ctx, prompt)
+	if err != nil {
+		log.Fatalf("ask: %v", err)
+	}
+
+	fmt.Println(answer) //nolint:forbidigo
 }
 
 func loadEnv() {
