@@ -69,22 +69,13 @@ func main() {
 }
 
 func link(filename string) {
-	err := os.Link(filename, "answer.md")
+	err := os.Remove("answer.md")
+	if err != nil && !errors.Is(err, os.ErrNotExist) {
+		log.Panicf("remove: %v", err)
+	}
+
+	err = os.Link(filename, "answer.md")
 	if err != nil {
-		if errors.Is(err, os.ErrExist) {
-			err := os.Remove("answer.md")
-			if err != nil {
-				log.Panicf("remove: %v", err)
-			}
-
-			err = os.Link(filename, "answer.md")
-			if err != nil {
-				log.Panicf("link: %v", err)
-			}
-
-			return
-		}
-
 		log.Panicf("link: %v", err)
 	}
 }
