@@ -1,0 +1,4 @@
+/vendor/
+/ask
+/.vscode/launch.json
+/.env
