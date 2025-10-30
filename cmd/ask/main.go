@@ -2,11 +2,13 @@ package main
 
 import (
 	"context"
+	"flag"
 	"fmt"
 	"log"
 	"os"
 	"runtime/debug"
 	"strings"
+	"time"
 
 	"github.com/joho/godotenv"
 	"github.com/neatflowcv/ask/internal/app/flow"
@@ -27,10 +29,14 @@ func main() {
 
 	log.Println("version", version())
 
-	prompt := strings.Join(os.Args[1:], " ")
+	flag.Parse()
+
+	prompt := strings.Join(flag.Args(), " ")
 	if prompt == "" {
 		log.Fatal("usage: ask <prompt>")
 	}
+
+	fmt.Println("Question:", prompt) //nolint:forbidigo
 
 	now := time.Now()
 	inquirer := gemini.NewClient(os.Getenv("KEY"))
