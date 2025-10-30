@@ -16,7 +16,7 @@ func NewPrinter() *Printer {
 }
 
 func (p *Printer) Print(item string) error {
-	fmt.Println(item) //nolint:forbidigo
+	fmt.Print(item) //nolint:forbidigo
 
 	return nil
 }
