@@ -44,9 +44,11 @@ func main() {
 	now := time.Now()
 	inquirer := gemini.NewClient(os.Getenv("KEY"))
 
-	filePrinter, err := file.NewPrinter("answer.txt")
+	filename := fmt.Sprintf("answer-%s.md", now.Format("20060102150405"))
+
+	filePrinter, err := file.NewPrinter(filename)
 	if err != nil {
-		log.Fatalf("new printer: %v", err)
+		log.Panicf("new printer: %v", err)
 	}
 	defer filePrinter.Close()
 
