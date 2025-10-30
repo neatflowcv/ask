@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"path/filepath"
 	"runtime/debug"
 	"strings"
 	"time"
@@ -81,7 +82,16 @@ func link(filename string) {
 }
 
 func loadEnv() {
-	err := godotenv.Load()
+	var envFiles []string
+
+	home, err := os.UserHomeDir()
+	if err == nil {
+		envFiles = append(envFiles, filepath.Join(home, ".ask.env"))
+	}
+
+	envFiles = append(envFiles, ".env")
+
+	err = godotenv.Load(envFiles...)
 	if err != nil {
 		log.Printf("load .env file: %v", err)
 	}
