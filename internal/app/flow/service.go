@@ -1,6 +1,7 @@
 package flow
 
 import (
+	"bytes"
 	"context"
 	"fmt"
 
@@ -18,10 +19,12 @@ func NewService(inquirer inquirer.Inquirer) *Service {
 }
 
 func (s *Service) Ask(ctx context.Context, prompt string) (string, error) {
-	answer, err := s.inquirer.Ask(ctx, prompt)
+	var buf bytes.Buffer
+
+	err := s.inquirer.Ask(ctx, prompt, &buf)
 	if err != nil {
 		return "", fmt.Errorf("ask: %w", err)
 	}
 
-	return answer, nil
+	return buf.String(), nil
 }

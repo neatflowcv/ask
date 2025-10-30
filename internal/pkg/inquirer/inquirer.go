@@ -1,7 +1,10 @@
 package inquirer
 
-import "context"
+import (
+	"context"
+	"io"
+)
 
 type Inquirer interface {
-	Ask(ctx context.Context, prompt string) (string, error)
+	Ask(ctx context.Context, prompt string, writer io.Writer) error
 }
