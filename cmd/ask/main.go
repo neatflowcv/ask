@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"errors"
 	"flag"
 	"fmt"
 	"log"
@@ -62,7 +63,30 @@ func main() {
 		log.Panicf("ask: %v", err)
 	}
 
+	link(filename)
+
 	log.Println("elapsed", time.Since(now))
+}
+
+func link(filename string) {
+	err := os.Link(filename, "answer.md")
+	if err != nil {
+		if errors.Is(err, os.ErrExist) {
+			err := os.Remove("answer.md")
+			if err != nil {
+				log.Panicf("remove: %v", err)
+			}
+
+			err = os.Link(filename, "answer.md")
+			if err != nil {
+				log.Panicf("link: %v", err)
+			}
+
+			return
+		}
+
+		log.Panicf("link: %v", err)
+	}
 }
 
 func loadEnv() {
