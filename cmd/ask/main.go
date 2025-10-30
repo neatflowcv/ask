@@ -10,6 +10,7 @@ import (
 
 	"github.com/joho/godotenv"
 	"github.com/neatflowcv/ask/internal/app/flow"
+	"github.com/neatflowcv/ask/internal/pkg/gemini"
 )
 
 func version() string {
@@ -31,7 +32,8 @@ func main() {
 		log.Fatal("usage: ask <prompt>")
 	}
 
-	service := flow.NewService()
+	inquirer := gemini.NewClient(os.Getenv("KEY"))
+	service := flow.NewService(inquirer)
 	ctx := context.Background()
 
 	answer, err := service.Ask(ctx, prompt)

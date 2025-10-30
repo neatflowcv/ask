@@ -3,20 +3,26 @@ package gemini
 import (
 	"context"
 	"fmt"
-	"os"
 
+	"github.com/neatflowcv/ask/internal/pkg/inquirer"
 	"google.golang.org/genai"
 )
 
-type Client struct{}
+var _ inquirer.Inquirer = (*Client)(nil)
 
-func NewClient() *Client {
-	return &Client{}
+type Client struct {
+	apiKey string
+}
+
+func NewClient(apiKey string) *Client {
+	return &Client{
+		apiKey: apiKey,
+	}
 }
 
 func (c *Client) Ask(ctx context.Context, prompt string) (string, error) {
 	client, err := genai.NewClient(ctx, &genai.ClientConfig{ //nolint:exhaustruct
-		APIKey:  os.Getenv("KEY"),
+		APIKey:  c.apiKey,
 		Backend: genai.BackendGeminiAPI,
 	})
 	if err != nil {
